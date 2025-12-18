@@ -2,8 +2,6 @@ from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import filedialog
 
-from sympy import preview
-
 image_photo = None
 display_image = None
 watermark_photo = None
@@ -47,10 +45,11 @@ def upload_watermark():
         filetypes=[("Image files", "*.png *.jpg *.jpeg")]
     )
     if watermark_path:
-        wtm = Image.open(watermark_path)
-        watermark_photo = wtm.convert("RGBA")
-        wtm.thumbnail((280, 400))
-        display_watermark = ImageTk.PhotoImage(wtm)
+        wtm = Image.open(watermark_path).convert("RGBA")
+        watermark_photo = wtm
+        display_wtm = wtm.copy()
+        display_wtm.thumbnail((280, 400))
+        display_watermark = ImageTk.PhotoImage(display_wtm)
 
         # Display the uploaded watermark in the canvas
         watermark_canvas.delete("all")
@@ -73,7 +72,9 @@ def save_image():
             defaultextension=".png",
             filetypes=[("PNG files", "*.png"), ("JPEG files", "*.jpg;*.jpeg")]
         )
-        if save_path:
+        if save_path.endswith(('.jpg', '.jpeg')):
+            result_image.convert("RGB").save(save_path)
+        else:
             result_image.save(save_path)
 
 def show_preview_window():
@@ -153,8 +154,6 @@ def add_watermark():
             # Combine original image with watermark layer
             result = Image.alpha_composite(image_photo, transparent_layer)
             result_image = result
-            result.thumbnail((560, 400))
-            display_result = ImageTk.PhotoImage(result)
             show_preview_window()
 
         except:
