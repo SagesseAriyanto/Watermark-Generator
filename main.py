@@ -1,6 +1,16 @@
 from PIL import Image, ImageTk
 import tkinter as tk
 from tkinter import filedialog
+import sys
+import os
+
+# Function to find absolute path of resources
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS   # PyInstaller creates a temp folder and stores path in _MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+    return os.path.join(base_path, relative_path)
 
 image_photo = None              # Original uploaded image   
 display_image = None            # Display version of uploaded image\
@@ -90,7 +100,10 @@ def show_preview_window():
         # Create a new preview window
         preview_window = tk.Toplevel()
         preview_window.title("Preview")
-        preview_window.iconbitmap('./Assets/icon.ico')
+        try:
+            preview_window.iconbitmap(resource_path('Assets/icon.ico'))
+        except:
+            pass  # Continue even if icon fails to load
         preview_window.minsize(550,450)
         preview_window.resizable(False, False)
 
@@ -231,7 +244,10 @@ window = tk.Tk()
 window.title("WaterMark Studio")
 
 # Icons and styles
-window.iconbitmap('./Assets/icon.ico')
+try:
+    window.iconbitmap(resource_path('Assets/icon.ico'))
+except:
+    pass  # Continue even if icon fails to load
 window.option_add("*Font", "{Candara} 11")
 window.option_add("*Button.Font", "{Candara} 11")
 window.option_add("*Button.Background", "#2C3E50")
