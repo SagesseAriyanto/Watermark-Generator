@@ -119,9 +119,26 @@ def add_watermark():
 
     if image_photo and watermark_photo:
         try:
-            # Resize watermark to 30% of the image width
-            watermark_width = int(image_photo.width * 0.3)
-            watermark_height = int(watermark_photo.height * (watermark_width / watermark_photo.width))
+            # Scale based on image area
+            image_area = image_photo.width * image_photo.height
+            target_watermark_area = image_area * 0.05
+
+            watermark_area = watermark_photo.width * watermark_photo.height
+            scale_factor = (target_watermark_area / watermark_area) ** 0.5
+
+            watermark_width = int(watermark_photo.width * scale_factor)
+            watermark_height = int(watermark_photo.height * scale_factor)
+
+            max_width = int(image_photo.width * 0.3)
+            max_height = int(image_photo.height * 0.3)
+
+            if watermark_width > max_width or watermark_height > max_height:
+                width_ratio = max_width / watermark_width
+                height_ratio = max_height / watermark_height
+                min_ratio = min(width_ratio, height_ratio)
+                watermark_width = int(watermark_width * min_ratio)
+                watermark_height = int(watermark_height * min_ratio)
+
             resized_watermark = watermark_photo.resize((watermark_width, watermark_height))
 
             # Position watermark at bottom-right corner
