@@ -19,7 +19,6 @@ preview_window = None
 
 def upload_image():
     global image_photo, image_uploaded, display_image
-
     # User selects an image file
     image_path = filedialog.askopenfilename(
         title="Select an image",
@@ -71,6 +70,7 @@ def verify_uploads():
     if image_uploaded and watermark_uploaded:
         convert.pack(pady=10)
 
+# Function to save the result image
 def save_image():
     global result_image
     if result_image:
@@ -83,12 +83,14 @@ def save_image():
         else:
             result_image.save(save_path)
 
+
 def show_preview_window():
     global result_image, display_result, preview_window
     if preview_window is None or not preview_window.winfo_exists():
         # Create a new preview window
         preview_window = tk.Toplevel()
-        preview_window.title("Watermarked Image Preview")
+        preview_window.title("Preview")
+        preview_window.iconbitmap('./Assets/icon.ico')
         preview_window.minsize(550,450)
         preview_window.resizable(False, False)
 
@@ -116,13 +118,12 @@ def show_preview_window():
             button_frame,
             text="⬅️",
             command=lambda: rotate_image('result', -90),
-            font=("Arial", 12),
             width=3,
         )
         rotate_result_left.pack(side="left", padx=5)
         
         # Save button
-        save_img = tk.Button(button_frame, text="Save", command=save_image)
+        save_img = tk.Button(button_frame, text="Save", command=save_image, width=12, font=("bold"))
         save_img.pack(side="left", padx=5)
         
         # Right rotation button
@@ -130,7 +131,6 @@ def show_preview_window():
             button_frame,
             text="➡️",
             command=lambda: rotate_image('result', 90),
-            font=("Arial", 12),
             width=3,
         )
         rotate_result_right.pack(side="left", padx=5)
@@ -138,15 +138,12 @@ def show_preview_window():
     preview = result_image.copy()
     preview.thumbnail((500, 400))
     display_result = ImageTk.PhotoImage(preview)
-
     preview_window.canvas.delete("all")
     preview_window.canvas.create_image(250, 200, image=display_result)
 
-
-
+# Function to add watermark to the image
 def add_watermark():
     global image_photo, watermark_photo, result_image, display_result
-    print(image_photo, watermark_photo)
 
     if image_photo and watermark_photo:
         try:
@@ -189,8 +186,10 @@ def add_watermark():
         except:
             return "Error applying watermark"
 
+# Function to rotate images
 def rotate_image(type, degrees):
     global image_photo, display_image, watermark_photo, display_watermark, result_image, display_result, preview_window
+    # Main screen image
     if type == 'image':
         if image_photo is None:
             return
@@ -202,6 +201,7 @@ def rotate_image(type, degrees):
         image_canvas.delete("all")
         image_canvas.create_image(140, 200, image=display_image)
     
+    # Watermark image
     elif type == 'watermark':
         if watermark_photo is None:
             return
@@ -213,6 +213,7 @@ def rotate_image(type, degrees):
         watermark_canvas.delete("all")
         watermark_canvas.create_image(140, 200, image=display_watermark)
     
+    # Result image
     elif type == 'result':
         if result_image is None:
             return
@@ -225,11 +226,20 @@ def rotate_image(type, degrees):
             preview_window.canvas.delete("all")
             preview_window.canvas.create_image(250, 200, image=display_result)
 
+# Set main application window
 window = tk.Tk()
-window.title("Image Watermark Generator")
+window.title("WaterMark Studio")
+
+# Icons and styles
+window.iconbitmap('./Assets/icon.ico')
+window.option_add("*Font", "{Candara} 11")
+window.option_add("*Button.Font", "{Candara} 11")
+window.option_add("*Button.Background", "#2C3E50")
+window.option_add("*Button.Foreground", "white")
+window.option_add("*Button.borderWidth", "0")
+
 window.minsize(600,500)
 window.resizable(False, False)
-
 
 # Create a main frame to display upload buttons and canvases
 frames_container = tk.Frame(window)
@@ -241,54 +251,64 @@ left_frame.pack(side="left", fill="both", expand=True, padx=10)
 right_frame = tk.Frame(frames_container)
 right_frame.pack(side="right", fill="both", expand=True, padx=10)
 
-uploaded_image = tk.Button(left_frame, text="image", command=upload_image)           # Upload Image Button
+# Upload Image Button and Canvas
+uploaded_image = tk.Button(
+    left_frame, text="➕ Image", command=upload_image, width=10
+)
 uploaded_image.pack()
-image_canvas = tk.Canvas(left_frame, width=280, height=400, bg="lightgray")              # Canvas to display uploaded image
+image_canvas = tk.Canvas(left_frame, width=280, height=400, bg="lightgray")   
 image_canvas.pack(pady=10)
 
+# Image Rotation Buttons
 image_rotate_frame = tk.Frame(left_frame)
 image_rotate_frame.pack(pady=5)
 rotate_image_left = tk.Button(
     image_rotate_frame,
     text="⬅️",
     command=lambda: rotate_image('image', -90),
-    font=("Arial", 12),
     width=3,
 )
-rotate_image_left.pack(side="left", padx=5)         # Rotate Left Button
+rotate_image_left.pack(side="left", padx=5)
 rotate_image_right = tk.Button(
     image_rotate_frame,
     text="➡️",
     command=lambda: rotate_image('image', 90),
-    font=("Arial", 12),
     width=3,
 )
-rotate_image_right.pack(side="left", padx=5)         # Rotate Right Button
+rotate_image_right.pack(side="left", padx=5)
 
-uploaded_watermark = tk.Button(right_frame, text="watermark", command=upload_watermark)           # Upload Watermark Button
+# Upload Watermark Button and Canvas
+uploaded_watermark = tk.Button(
+    right_frame, text="➕ Mark", command=upload_watermark, width=10
+)
 uploaded_watermark.pack()
-watermark_canvas = tk.Canvas(right_frame, width=280, height=400, bg="lightgray")              # Canvas to display uploaded watermark
+watermark_canvas = tk.Canvas(right_frame, width=280, height=400, bg="lightgray")
 watermark_canvas.pack(pady=10)
+
+# Watermark Rotation Buttons
 watermark_rotate_frame = tk.Frame(right_frame)
 watermark_rotate_frame.pack(pady=5)
 rotate_watermark_left = tk.Button(
     watermark_rotate_frame,
     text="⬅️",
     command=lambda: rotate_image('watermark', -90),
-    font=("Arial", 12),
     width=3,
 )
-rotate_watermark_left.pack(side="left", padx=5)         # Rotate Left Button
+rotate_watermark_left.pack(side="left", padx=5)
 rotate_watermark_right = tk.Button(
     watermark_rotate_frame,
     text="➡️",
     command=lambda: rotate_image('watermark', 90),
-    font=("Arial", 12),
     width=3,
 )
-rotate_watermark_right.pack(side="left", padx=5)         # Rotate Right Button
+rotate_watermark_right.pack(side="left", padx=5)
 
-# Hide convert button initially, will be displayed after both uploads verified
-convert = tk.Button(window, text="Apply Watermark", command=add_watermark)
+# Display convert button after both uploads verified
+convert = tk.Button(
+    window,
+    text="Generate",
+    command=add_watermark,
+    width=20,
+)
 
 window.mainloop()
