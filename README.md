@@ -25,8 +25,6 @@ python main.py
 3. Click "Generate" to preview
 4. Click "Save" to export
 
-Watermarks are positioned at the bottom-right corner by default.
-
 ## 🛠️ Tech Stack
 
 Python • Tkinter • Pillow • PyInstaller
