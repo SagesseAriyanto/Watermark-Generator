@@ -27,7 +27,7 @@ python main.py
 
 ## 🛠️ Tech Stack
 
-Python • Tkinter • Pillow • PyInstaller
+Python • Tkinter • Pillow
 
 ## ⚠️ Note
 
